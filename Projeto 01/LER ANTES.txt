@@ -1,0 +1,16 @@
+ARQUIVOS JSON PARA USAR NO POST(INSERIR) E EM PUT(ATUALIZAR)
+
+{
+"nome":"Cyberpunk 2077",
+"imagem":"https://bdjogos.com.br/capas/3425-Cyberpunk-2077-capa-1.jpg"
+}
+
+{
+"nome":"Resident Evil Village",
+"imagem":"https://bdjogos.com.br/capas/7507-resident-evil-village-capa-1.jpg"
+}
+
+{
+"nome":"Spider-Man: Miles Morales",
+"imagem":"https://bdjogos.com.br/capas/7513-spider-man-miles-morales-playstation-5-capa-1.jpg"
+}
