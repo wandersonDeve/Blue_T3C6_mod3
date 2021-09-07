@@ -1,25 +1,108 @@
 const express = require("express");
 const mongodb = require("mongodb");
 const ObjectId = mongodb.ObjectId;
-const app = express();
+require("dotenv").config();
 
 (async () => {
-  app.use(express.json());
-  const port = 3000;
+	const host = process.env.DB_HOST;
+  const user = process.env.DB_USER;
+  const pass = process.env.DB_PASS;
+  const dbName = process.env.DB_NAME;
 
-  const url = `mongodb+srv://admin:<password>@cluster0.yhbkv.mongodb.net/test`;
+	const app = express();
+	app.use(express.json());
+	const port = process.env.PORT || 3000;
+	const connectionString = `mongodb+srv://${user}:${pass}@${host}/${dbName}?retryWrites=true&w=majority`;
 
-  app.get('/', (req, res) => {
-      res.send('Bem vindo a nova API RESTFULL')
-  })
+	const options = {
+		useUnifiedTopology: true,
+	};
 
-  app.get('/personagens', async (req, res) => {
-      
-  })
- 
+	const client = await mongodb.MongoClient.connect(connectionString, options);
 
+	const db = client.db("Rick");
+	const personagens = db.collection("rickrick");
 
-  app.listen(port, () => {
-    console.info(`Servidor rodando em http://localhost:${port}`);
-  });
+	const getPersonagensValidas = () => personagens.find({}).toArray();
+
+	const getPersonagemById = async (id) =>
+		personagens.findOne({ _id: ObjectId(id) });
+
+	app.all("/*", (req, res, next) => {
+		res.header("Access-Control-Allow-Origin", "*");
+
+		res.header("Access-Control-Allow-Methods", "*");
+
+		res.header(
+			"Access-Control-Allow-Headers",
+			"Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
+		);
+
+		next();
+	});
+
+	app.get("/", (req, res) => {
+		res.send({ info: "Olá, Blue" });
+	});
+
+	//[GET] GetAllPersonagens
+
+	app.get("/personagens", async (req, res) => {
+		res.send(await getPersonagensValidas());
+	});
+
+	//[GET] getPersonagemById
+
+	app.get("/personagens/:id", async (req, res) => {
+		const id = req.params.id;
+		const personagem = await getPersonagemById(id);
+		res.send(personagem);
+	});
+
+	app.post("/personagens", async (req, res) => {
+		const objeto = req.body;
+
+		if (!objeto || !objeto.nome || !objeto.imagemUrl) {
+			res.send("Objeto invalido");
+			return;
+		}
+
+		const insertCount = await personagens.insertOne(objeto);
+		console.log(insertCount);
+		if (!insertCount) {
+			res.send("Ocorreu um erro");
+			return;
+		}
+
+		res.send(objeto);
+	});
+
+	app.put("/personagens/:id", async (req, res) => {
+		const id = req.params.id;
+		const objeto = req.body;
+		res.send(
+			await personagens.updateOne(
+				{
+					_id: ObjectId(id),
+				},
+				{
+					$set: objeto,
+				}
+			)
+		);
+	});
+
+	app.delete("/personagens/:id", async (req, res) => {
+		const id = req.params.id;
+
+		res.send(
+			await personagens.deleteOne({
+				_id: ObjectId(id),
+			})
+		);
+	});
+
+	app.listen(port, () => {
+		console.info(`App rodando em http://localhost:${port}`);
+	});
 })();
