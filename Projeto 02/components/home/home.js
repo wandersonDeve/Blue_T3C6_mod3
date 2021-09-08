@@ -1,11 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-//Middleware especifiar que é esse router que a gente utilizar a 'router'
-router.use(function timelog(req, res, next) {
-    next();
-	//console.log("Time: ", Date.now());
-});
+router.use((req, res, next) => next());
 
 router.get("/", async (req, res) => {
 	res.send({ info: "Bem vindo a integração de API com Front" });
