@@ -47,9 +47,33 @@ const create = async (req, res) => {
   }
 
 };
+const update = async (req, res) => {
+    const { nome, identidade, genero, imagem } = req.body;
+
+    if (!nome || !identidade || !genero || !imagem) {
+        res
+          .status(400)
+          .send({ message: "Algum dado esta faltando, verifique os dados" });
+        return;
+      }
+
+      res.personagem.nome = nome
+      res.personagem.identidade = identidade
+      res.personagem.genero = genero
+      res.personagem.imagem = imagem
+
+      try{
+        await res.personagem.save()
+        res.send({ msg: "Personagem alterado com sucesso" })
+      }catch (err){
+        res.status(500).send({ error: err})
+      }
+
+}
 
 module.exports = {
   getAll,
   getById,
-  create
+  create,
+  update
 };
