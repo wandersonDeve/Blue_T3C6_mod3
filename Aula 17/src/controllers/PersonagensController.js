@@ -17,6 +17,7 @@ const getById = async (req, res) => {
             res.status(404).send({ message:"Personagem não encontrado" })
             return
         }
+        return res.send({ personagem })
     }catch(err){
         res.status(500).send({ error: err })
     }
