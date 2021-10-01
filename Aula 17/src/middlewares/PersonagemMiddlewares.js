@@ -8,7 +8,7 @@ const validaId = async (req, res, next) => {
     res.status(400).send({ error: "Id invalido" });
     return;
   }
-  next();
+  
 };
 
 try {
